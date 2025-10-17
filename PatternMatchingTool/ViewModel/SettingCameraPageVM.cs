@@ -27,7 +27,7 @@ namespace PatternMatchingTool.ViewModel
         //[ObservableProperty]
         //private ICogImage displayImage;
 
-        //[ObservableProperty]
+        [ObservableProperty]
         private Bitmap displayBitmap;
 
         public SettingCameraPageVM()
