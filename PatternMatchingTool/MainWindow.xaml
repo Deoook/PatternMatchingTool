@@ -1,0 +1,41 @@
+﻿<Window x:Class="PatternMatchingTool.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PatternMatchingTool"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:view="clr-namespace:PatternMatchingTool.View"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="780" Width="1350" Background="Black">
+    <Grid>
+        <ui:NavigationView PaneDisplayMode="LeftFluent"
+                           IsBackButtonVisible="Collapsed" 
+                           IsPaneToggleVisible="False"
+                           IsPaneVisible="True"
+                           Width="Auto"
+                           UseLayoutRounding="True"
+                           Background="Red">
+            <ui:NavigationView.Resources>
+                <ResourceDictionary>
+                    <!--<SolidColorBrush x:Key="NavigationViewContentBackground" Color="Aqua" />
+                    <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="White" />-->
+                </ResourceDictionary>
+            </ui:NavigationView.Resources>
+
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem Content="Auto" 
+                                       Icon="Auto" 
+                                       Tag="AutoPage" 
+                                       Cursor="Hand" 
+                                       NavigationCacheMode="Enabled"
+                                       TargetPageType="{x:Type view:AutoPage}"/>
+                <ui:NavigationViewItem Content="Setting" 
+                                       Icon="Settings" 
+                                       Tag="SettingsPage" 
+                                       NavigationCacheMode="Enabled"
+                                       TargetPageType="{x:Type view:SettingPage}"/>
+            </ui:NavigationView.MenuItems>
+        </ui:NavigationView>
+    </Grid>
+</Window>

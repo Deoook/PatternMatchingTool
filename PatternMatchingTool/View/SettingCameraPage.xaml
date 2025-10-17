@@ -1,0 +1,159 @@
+﻿<Page
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PatternMatchingTool.View"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" x:Class="PatternMatchingTool.View.SettingCameraPage"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration" 
+        xmlns:cognex="clr-namespace:Cognex.VisionPro.Display;assembly=Cognex.VisionPro.Display.Controls"
+        xmlns:converters="clr-namespace:PatternMatchingTool.Converter"
+        mc:Ignorable="d"
+        Title="SettingCameraPage" Margin="10, 10, 10, 10" Background="#FF111111">
+
+    <Page.Resources>
+        <converters:BitmapSourceConverter x:Key="BitmapSourceConvert" />
+    </Page.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- 제목 -->
+                <RowDefinition Height="*"/>
+                <!-- CogDisplay -->
+                <RowDefinition Height="Auto"/>
+                <!-- 버튼 -->
+            </Grid.RowDefinitions>
+
+            <ComboBox ItemsSource="{Binding CameraList}"
+                  SelectedIndex="{Binding SelectedCameraIndex, Mode=TwoWay}"
+                  Height="40"
+                  BorderThickness="1"
+                  BorderBrush="Gray"
+                      Margin="0,0,0,10">
+            </ComboBox>
+
+            <!--<wfi:WindowsFormsHost Grid.Row="1"
+                          Name="formsHost"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                                  Margin="5, 5, 5, 5">
+                <cognex:CogDisplay x:Name="CogDisplay1"
+                           Dock="Fill" />
+            </wfi:WindowsFormsHost>-->
+
+            <Image Grid.Row="1"
+                   Name="CameraImage"
+                   Stretch="Uniform"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   Margin="5,5,5,5"
+                   Source="{Binding DisplayBitmap, Converter={StaticResource BitmapSourceConvert}}"/>
+
+            <TextBlock Grid.Row="2"
+                   Text="Camera Name"
+                   FontSize="12"
+                   FontWeight="Bold"
+                   Foreground="White"
+                   Margin="10"/>
+        </Grid>
+
+        <StackPanel Grid.Column="1" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <DockPanel Margin="10">
+                <Button Content="SEARCH"
+                    Command="{Binding SearchCameraCommand}"
+                    Width="130"
+                    Height="30"
+                    Margin="10"/>
+            </DockPanel>
+            <DockPanel Margin="10">
+                <Button Content="OPEN CAMERA"
+                    Command="{Binding OpenCameraCommand}"
+                    Width="130"
+                    Height="30"
+                    Margin="10"/>
+                <Button Content="CLOSE CAMERA"
+                    Command="{Binding CloseCameraCommand}"
+                    Width="130"
+                    Height="30"
+                    Margin="10"/>
+            </DockPanel>
+            <DockPanel Margin="10">
+                <Button Content="START GRAB"
+                    Command="{Binding StartGrabCommand}"
+                    Width="130"
+                    Height="30"
+                    Margin="10"/>
+                <Button Content="STOP GRAB"
+                    Command="{Binding StopGrabCommand}"
+                    Width="130"
+                    Height="30"
+                    Margin="10"/>
+            </DockPanel>
+            <DockPanel Margin="10" LastChildFill="False">
+                <ui:ToggleSwitch 
+        Margin="10"
+        Content="ToggleSwitch" 
+        DockPanel.Dock="Left"
+        Height="20" 
+        Width="130"/>
+                <Button Content="TRIGGER"
+            Command="{Binding OpenCameraCommand}"
+            Width="130"
+            Height="30"
+            Margin="10"
+            DockPanel.Dock="Left"/>
+            </DockPanel>
+            <DockPanel Margin="10">
+                <Label Content="EXPOSURE TIME" 
+                       FontSize="12"
+                       FontWeight="Bold"
+                       VerticalContentAlignment="Center"
+                       Width="130"
+                       Margin="10"/>
+                <TextBox Text="{Binding ExposureTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="10"
+                         Width="130"/>
+            </DockPanel>
+            <DockPanel Margin="10">
+                <Label Content="GAIN" 
+                       FontSize="12"
+                       FontWeight="Bold"
+                       VerticalContentAlignment="Center"
+                       Width="130"
+                       Margin="10"/>
+                <TextBox Text="{Binding ExposureTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="10"/>
+            </DockPanel>
+            <DockPanel Margin="10">
+                <Label Content="FRAME RATE" 
+                       FontSize="12"
+                       FontWeight="Bold"
+                       VerticalContentAlignment="Center"
+                       Width="130"
+                       Margin="10"/>
+                <TextBox Text="{Binding ExposureTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="10"/>
+            </DockPanel>
+            <DockPanel Margin="10">
+                <Button Content="SET PARAM"
+                    Command="{Binding OpenCameraCommand}"
+                    Width="130"
+                    Height="30"
+                    Margin="10"/>
+                <Button Content="GET PARAM"
+                    Command="{Binding OpenCameraCommand}"
+                    Width="130"
+                    Height="30"
+                    Margin="10"/>
+            </DockPanel>
+
+        </StackPanel>
+    </Grid>
+</Page>

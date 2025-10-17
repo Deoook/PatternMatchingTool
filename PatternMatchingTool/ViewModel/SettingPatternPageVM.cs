@@ -1,0 +1,17 @@
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PatternMatchingTool.ViewModel
+{
+    public partial class SettingPatternPageVM : ObservableObject
+    {
+        public SettingPatternPageVM()
+        {
+            
+        }
+    }
+}
