@@ -16,6 +16,7 @@ namespace PatternMatchingTool.Data
         public SettingPageVM SettingVM = null;
         public SettingCameraPageVM SettingCameraVM = null;
         public SettingPatternPageVM SettingPatternVM = null;
+        public SettingIDPageVM SettingIDVM = null;
         public ConfigPageVM ConfigVM = null;
 
         private static Document m_objDocument = null;
@@ -51,16 +52,16 @@ namespace PatternMatchingTool.Data
             bool bReturn = false;
             do
             {
-                //Page View Model Initialize
-                if (false == InitializeVM())
-                    break;
+
 
                 //Config Initialize
                 m_objConfig = new Config();
                 if (false == m_objConfig.Initialize())
                     break;
 
-
+                //Page View Model Initialize
+                if (false == InitializeVM())
+                    break;
 
                 //Process Initialize
                 m_objProcessMain = new ProcessMain();
@@ -85,6 +86,7 @@ namespace PatternMatchingTool.Data
                 SettingVM = new SettingPageVM();
                 SettingCameraVM = new SettingCameraPageVM();
                 SettingPatternVM = new SettingPatternPageVM();
+                SettingIDVM = new SettingIDPageVM();
                 ConfigVM = new ConfigPageVM();
 
                 bReturn = true;

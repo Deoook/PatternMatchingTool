@@ -6,10 +6,17 @@
         xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
         xmlns:cognex="clr-namespace:Cognex.VisionPro.Display;assembly=Cognex.VisionPro.Display.Controls"
+        xmlns:converters="clr-namespace:PatternMatchingTool.Converter"
         xmlns:local="clr-namespace:PatternMatchingTool.View"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" x:Class="PatternMatchingTool.View.SettingPatternPage"
         mc:Ignorable="d"
         Title="SettingPatternPage" >
+
+    <Page.Resources>
+        <converters:BitmapSourceConverter x:Key="BitmapSourceConvert" />
+        <converters:BoolToBrushConverter x:Key="BoolToBrushConvert" />
+    </Page.Resources>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -32,14 +39,18 @@
                 <Button Content="Load Image" TextBlock.FontSize="12" Height="35" Width="120" Margin="3" Background="Black" DockPanel.Dock="Left" Command="{Binding LoadImageCommand}"/>
             </DockPanel>
 
-            <WindowsFormsHost Grid.Row="1"
-                          x:Name="formsHost"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch"
-                          UseLayoutRounding="True">
-                <cognex:CogDisplay x:Name="CogDisplay1"
-                           Dock="Fill" />
-            </WindowsFormsHost>
+            <Viewbox Grid.Column="0"
+                 Grid.Row="0"
+                     Stretch="Uniform"
+                     ClipToBounds="True"
+                     MinWidth="618"
+                     MinHeight="500" Grid.RowSpan="2">
+                <Image Name="CameraImage"
+                     MaxHeight="500"
+                     Stretch="Uniform"
+                     Source="{Binding DisplayBitmap, Converter={StaticResource BitmapSourceConvert}}"/>
+            </Viewbox>
+            
         </Grid>
         <Separator  Grid.Column="1" Margin="5" Width="5" Background="White"/>
         <!-- 오른쪽: 패턴 설정 -->

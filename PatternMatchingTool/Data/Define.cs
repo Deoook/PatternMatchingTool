@@ -26,7 +26,7 @@ namespace PatternMatchingTool.Data
         /// </summary>
         public enum RunMode
         {
-            RUN_MODE_IDLE = 0, RUN_MODE_RUNNING, RUN_MODE_STOP 
+            RUN_MODE_IDLE = 0, RUN_MODE_READY, RUN_MODE_RUNNING, RUN_MODE_STOP 
         };
 
         /// <summary>

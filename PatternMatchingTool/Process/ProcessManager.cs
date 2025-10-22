@@ -3,7 +3,6 @@ using System.Xml.Linq;
 
 namespace PatternMatchingTool.Process
 {
-    //검사 순서 관리 클래스
     public class ProcessManager
     {
         private System.Windows.Forms.Timer m_objProcessTimer;
@@ -19,11 +18,12 @@ namespace PatternMatchingTool.Process
             bool bReturn = false;
             do
             {
+                // 카메라 콜백 연결
+                pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.OnProcessFrameReceived += OnProcessFrameReceived;
 
-
-                //타이머 설정
+                // 타이머 설정
                 m_objProcessTimer = new System.Windows.Forms.Timer();
-                m_objProcessTimer.Interval = 500;
+                m_objProcessTimer.Interval = 100;
                 m_objProcessTimer.Tick += timer_Elapsed;
                 m_objProcessTimer.Start();
 
@@ -37,16 +37,24 @@ namespace PatternMatchingTool.Process
         {
             var pDocument = Document.GetDocument;
 
-            // 검사 대기중이 아니면 Return
+            // RUN_MODE_IDLE 일 경우 검사 준비 시작
             if (Define.RunMode.RUN_MODE_IDLE == pDocument.GetRunMode())
+                pDocument.m_objProcessMain.m_objProcessCameraManager.Start();
+            // RUN_MODE_READY이고 TRIGGER가 켜졌으면 검사 시작
+            else if (Define.RunMode.RUN_MODE_READY == pDocument.GetRunMode() && Define.Trigger.TRIGGER_OFF != pDocument.GetTrigger())
                 DoProcess();
-
+            // RUN_MODE가 STOP이면 해제, Trigger OFF 처리
+            else if (Define.RunMode.RUN_MODE_STOP == pDocument.GetRunMode())
+            {
+                pDocument.m_objProcessMain.m_objProcessCameraManager.Stop();
+                pDocument.SetTrigger(Define.Trigger.TRIGGER_OFF);
+            }
         }
 
         public void Deinitialize()
         {
             var pDocument = Document.GetDocument;
-            //카메라 콜백 해제
+            // 카메라 콜백 해제
             pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.OnProcessFrameReceived -= OnProcessFrameReceived;
         }
 
@@ -56,31 +64,7 @@ namespace PatternMatchingTool.Process
 
             do
             {
-                // 현재 실행 중이면 Break.
-                if (Define.RunMode.RUN_MODE_RUNNING == pDocument.GetRunMode())
-                    break;
-
-                // Camera 연결 안했으면 연결
-                if (false == pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.IsConnected())
-                {
-                    if (false == pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.OpenDevice(pDocument.m_objConfig.GetCameraParameter()))
-                        break;
-                }
-
-                // 트리거 Off 상태면 Break.
-                if (Define.Trigger.TRIGGER_OFF == pDocument.GetTrigger())
-                    break;
-
-                //카메라 콜백 연결
-                pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.OnProcessFrameReceived += OnProcessFrameReceived;
-
-                // Grab Start
-                if (false == pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.StartGrab())
-                {
-                    pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.StopGrab();
-                    break;
-                }
-
+                // 동작 중으로 상태 바꾸고
                 pDocument.SetRunMode(Define.RunMode.RUN_MODE_RUNNING);
 
                 // 트리거 하나 날림
@@ -90,32 +74,32 @@ namespace PatternMatchingTool.Process
 
         private void OnProcessFrameReceived(Bitmap bmp)
         {
-            //Trigger 확인해서
-            //ID인지 Pattern인지 확인 후에
-            //검사하고
-            //결과 Bitmap위에 그린다음에 다시 뿌리기...
+            // Trigger 확인해서
+            // ID인지 Pattern인지 확인 후에
+            // 검사하고
+            // 결과 Bitmap위에 그린다음에 뿌리기...
             var pDocument = Document.GetDocument;
 
             if (Define.Trigger.TRIGGER_ON == pDocument.GetTrigger())
             {
-                //검사 트리거가 아니면 그냥 뿌리고 끝
+                // 검사 트리거가 아니면 그냥 뿌리고 끝
                 pDocument.AutoVM.DisplayBitmap = bmp;
             }
             else if (Define.Trigger.TRIGGER_ID == pDocument.GetTrigger())
             {
-                //ID 검사
+                // ID 검사
+                // ProcessID Class 따로 구현 후에 Return 받기?
             }
             else if (Define.Trigger.TRIGGER_PATTERN_MATCHING == pDocument.GetTrigger())
             {
-                //패턴 매칭 검사
+                // 패턴 매칭 검사
             }
-
-            // Grab 중지
-            pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.StopGrab();
 
             // Trigger Off
             pDocument.SetTrigger(Define.Trigger.TRIGGER_OFF);
-            pDocument.SetRunMode(Define.RunMode.RUN_MODE_IDLE);
+            
+            // RunMode 다시 Ready 상태로 변경
+            pDocument.SetRunMode(Define.RunMode.RUN_MODE_READY);
         }
     }
 }

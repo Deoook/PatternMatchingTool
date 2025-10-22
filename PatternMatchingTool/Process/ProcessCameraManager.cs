@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace PatternMatchingTool.Process
 {
@@ -16,6 +17,7 @@ namespace PatternMatchingTool.Process
     {
         public DeviceCamera m_objCamera;
         public MyCamera.MV_CC_DEVICE_INFO_LIST m_stDeviceList;
+        public bool m_bisStart = false;
         public ProcessCameraManager()
         {
             
@@ -33,7 +35,7 @@ namespace PatternMatchingTool.Process
                 SearchDevice();
 
                 // 시작할 때 카메라 열어두기
-                m_objCamera.OpenDevice(pDocument.m_objConfig.GetCameraParameter());
+                //m_objCamera.OpenDevice(pDocument.m_objConfig.GetCameraParameter());
 
                 bReturn = true;
             } while (false);
@@ -85,14 +87,60 @@ namespace PatternMatchingTool.Process
             return deviceList;
         }
 
-        public void Start()
+        public bool Start()
         {
+            var pDocument = Document.GetDocument;
+            bool bReturn = false;
 
+            do
+            {
+                // 이미 시작 중일 경우
+                if(true == m_bisStart)
+                {
+                    bReturn = true;
+                    break;
+                }
+
+                // 카메라 열고
+                if (false == m_objCamera.OpenDevice(pDocument.m_objConfig.GetCameraParameter()))
+                    break;
+
+                // 카메라 설정 넣어주고
+                m_objCamera.SetExposureTime(pDocument.m_objConfig.GetCameraParameter().fExposureTime);
+                m_objCamera.SetGain(pDocument.m_objConfig.GetCameraParameter().fGain);
+                m_objCamera.SetFrameRate(pDocument.m_objConfig.GetCameraParameter().fFrameRate);
+
+                // Grab Start
+                if (false == m_objCamera.StartGrab())
+                    break;
+
+                // 검사 준비 완료 상태로 변경
+                pDocument.SetRunMode(Define.RunMode.RUN_MODE_READY);
+
+                m_bisStart = true;
+                bReturn = true;
+            } while (false);
+
+            return bReturn;
         }
 
         public void Stop()
         {
+            // 시작 중이 아닐 경우
+            if (false == m_bisStart)
+                return;
 
+            var pDocument = Document.GetDocument;
+
+            // Grab Stop
+            m_objCamera.StopGrab();
+            // 카메라 닫기
+            m_objCamera.CloseDevice();
+
+            // 정지 상태로 변경
+            pDocument.SetRunMode(Define.RunMode.RUN_MODE_STOP);
+
+            m_bisStart = false;
         }
     }
 }

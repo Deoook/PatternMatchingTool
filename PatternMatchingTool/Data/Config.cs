@@ -1,4 +1,5 @@
-﻿using PatternMatchingTool.Data;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using PatternMatchingTool.Data;
 using System.IO;
 
 namespace PatternMatchingTool
@@ -10,6 +11,7 @@ namespace PatternMatchingTool
         private string m_strCameraRecipePath;
         private SystemParameter m_objSystemParameter;
         private CameraParameter m_objCameraParameter;
+        private RecipeParameter m_objRecipeParameter;
         public bool Initialize()
         {
             bool bReturn = false;
@@ -31,8 +33,12 @@ namespace PatternMatchingTool
                 m_objCameraParameter = new CameraParameter();
                 LoadCameraParameter();
 
+                m_objRecipeParameter = new RecipeParameter();
+                LoadRecipeParameter();
+
                 SaveSystemParameter();
                 SaveCameraParameter();
+                SaveRecipeParameter();
                 bReturn = true;
             } while (false);
 
@@ -144,6 +150,9 @@ namespace PatternMatchingTool
                 if (varParameterOrigin.strRecipeID != varParameter.strRecipeID)
                     objINI.WriteValue(strSection, "strRecipeID", varParameter.strRecipeID);
 
+                // 원본 바꿔줌
+                m_objSystemParameter = objSystemParameter.Clone() as SystemParameter;
+
             } while (false);
 
             return bReturn;
@@ -219,7 +228,6 @@ namespace PatternMatchingTool
                 objINI.WriteValue(strSection, "fGain", varParameter.fGain);
                 objINI.WriteValue(strSection, "fFrameRate", (int)varParameter.fFrameRate);
 
-
                 bReturn = true;
             } while (false);
 
@@ -248,6 +256,9 @@ namespace PatternMatchingTool
                 objINI.WriteValue(strSection, "fGain", varParameter.fGain);
                 objINI.WriteValue(strSection, "fFrameRate", (int)varParameter.fFrameRate);
 
+                // 원본 바꿔줌
+                m_objCameraParameter = objCameraParameter.Clone() as CameraParameter;
+
                 bReturn = true;
             } while (false);
 
@@ -257,6 +268,119 @@ namespace PatternMatchingTool
         public Config.CameraParameter GetCameraParameter()
         {
             return m_objCameraParameter.Clone() as CameraParameter;
+        }
+
+        public class RecipeParameter : ICloneable
+        {
+            public bool bTryHarder;
+            public bool bTryInverted;
+            public bool bTryAutoRotae;
+
+            public RecipeParameter()
+            {
+                bTryHarder = false;
+                bTryInverted = false;
+                bTryAutoRotae = false;
+            }
+
+            public object Clone()
+            {
+                RecipeParameter obj = new RecipeParameter();
+                obj.bTryHarder = this.bTryHarder;
+                obj.bTryInverted = this.bTryInverted;
+                obj.bTryAutoRotae = this.bTryAutoRotae;
+
+                return obj;
+            }
+        }
+
+        public bool LoadRecipeParameter()
+        {
+            bool bReturn = false;
+            do
+            {
+                string strPath = string.Format(@"{0}\{1}", m_objSystemParameter.strRecipePath, m_objSystemParameter.strRecipeID);
+                if (false == Directory.Exists(strPath))
+                {
+                    // 폴더 생성
+                    Directory.CreateDirectory(strPath);
+                }
+                strPath = string.Format(@"{0}\{1}\{2}", m_objSystemParameter.strRecipePath, m_objSystemParameter.strRecipeID, Define.DEF_RECIPE_INI);
+                ClassINI objINI = new ClassINI(strPath);
+
+                var varParameter = m_objRecipeParameter;
+                string strSection = "ID";
+                varParameter.bTryHarder = objINI.GetBool(strSection, "bTryHarder", false);
+                varParameter.bTryInverted = objINI.GetBool(strSection, "bTryInverted", false);
+                varParameter.bTryAutoRotae = objINI.GetBool(strSection, "bTryAutoRotae", false);
+
+                bReturn = true;
+            } while (false);
+
+            return bReturn;
+        }
+
+        private bool SaveRecipeParameter()
+        {
+            bool bReturn = false;
+            do
+            {
+                string strPath = string.Format(@"{0}\{1}", m_objSystemParameter.strRecipePath, m_objSystemParameter.strRecipeID);
+                if (false == Directory.Exists(strPath))
+                {
+                    // 폴더 생성
+                    Directory.CreateDirectory(strPath);
+                }
+                strPath = string.Format(@"{0}\{1}\{2}", m_objSystemParameter.strRecipePath, m_objSystemParameter.strRecipeID, Define.DEF_RECIPE_INI);
+                ClassINI objINI = new ClassINI(strPath);
+                var varParameter = m_objRecipeParameter;
+
+                string strSection = "ID";
+                objINI.WriteValue(strSection, "bTryHarder", varParameter.bTryHarder);
+                objINI.WriteValue(strSection, "bTryInverted", varParameter.bTryInverted);
+                objINI.WriteValue(strSection, "bTryAutoRotae", varParameter.bTryAutoRotae);
+
+                bReturn = true;
+            } while (false);
+
+            return bReturn;
+        }
+
+        public bool SaveRecipeParameter(RecipeParameter objRecipeParameter)
+        {
+            bool bReturn = false;
+            do
+            {
+                string strPath = string.Format(@"{0}\{1}", m_objSystemParameter.strRecipePath, m_objSystemParameter.strRecipeID);
+                if (false == Directory.Exists(strPath))
+                {
+                    // 폴더 생성
+                    Directory.CreateDirectory(strPath);
+                }
+
+                strPath = string.Format(@"{0}\{1}\{2}", m_objSystemParameter.strRecipePath, m_objSystemParameter.strRecipeID, Define.DEF_RECIPE_INI);
+                ClassINI objINI = new ClassINI(strPath);
+                var varParameter = objRecipeParameter;
+
+                string strSection = "ID";
+
+
+                objINI.WriteValue(strSection, "bTryHarder", varParameter.bTryHarder);
+                objINI.WriteValue(strSection, "bTryInverted", varParameter.bTryInverted);
+                objINI.WriteValue(strSection, "bTryAutoRotae", varParameter.bTryAutoRotae);
+
+                // 원본 바꿔줌
+                m_objRecipeParameter = objRecipeParameter.Clone() as RecipeParameter;
+
+                bReturn = true;
+            } while (false);
+
+            return bReturn;
+        }
+
+        public RecipeParameter GetRecipeParameter()
+        {
+            return m_objRecipeParameter.Clone() as RecipeParameter;
         }
     }
 }

@@ -26,12 +26,20 @@
                 <ui:NavigationViewItem Content="CAMERA" 
                                        Icon="Auto" 
                                        Tag="AutoPage" 
+                                       HorizontalAlignment="Center"
                                        Cursor="Hand" 
                                        NavigationCacheMode="Enabled"
                                        TargetPageType="{x:Type view:SettingCameraPage}"/>
+                <ui:NavigationViewItem Content="ID" 
+                                       Icon="Settings" 
+                                       Tag="SettingsPage" 
+                                       HorizontalAlignment="Center"
+                                       NavigationCacheMode="Enabled"
+                                       TargetPageType="{x:Type view:SettingIDPage}"/>
                 <ui:NavigationViewItem Content="PATTERN" 
                                        Icon="Settings" 
                                        Tag="SettingsPage" 
+                                       HorizontalAlignment="Center"
                                        NavigationCacheMode="Enabled"
                                        TargetPageType="{x:Type view:SettingPatternPage}"/>
             </ui:NavigationView.MenuItems>

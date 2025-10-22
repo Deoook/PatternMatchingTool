@@ -44,6 +44,7 @@ namespace PatternMatchingTool.ViewModel
 
         public SettingCameraPageVM()
         {
+            var pDocument = Document.GetDocument;
 
         }
 
