@@ -1,15 +1,57 @@
-﻿<Page x:Class="PatternMatchingTool.View.SettingPatternPage"
+﻿<Page
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
+        xmlns:cognex="clr-namespace:Cognex.VisionPro.Display;assembly=Cognex.VisionPro.Display.Controls"
         xmlns:local="clr-namespace:PatternMatchingTool.View"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" x:Class="PatternMatchingTool.View.SettingPatternPage"
         mc:Ignorable="d"
-        Title="SettingPatternPage" Height="450" Width="800">
+        Title="SettingPatternPage" >
     <Grid>
-        <Button Content="Pattern" Width="100" Height="30"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                Background="Black"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 왼쪽: 버튼 + CogDisplay -->
+        <Grid Grid.Column="0" Margin="5">
+            <Grid.RowDefinitions>
+                <!-- 버튼 -->
+                <RowDefinition Height="Auto"/>
+                <!-- CogDisplay -->
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <DockPanel Grid.Row="0" Margin="3">
+                <Button Content="Grab Image" TextBlock.FontSize="12" Height="35" Width="120" Margin="3" Background="Black" DockPanel.Dock="Left" />
+                <Button Content="Grab Camera" TextBlock.FontSize="12" Height="35" Width="120" Margin="3" Background="Black" DockPanel.Dock="Left"/>
+                <Button Content="Load Image" TextBlock.FontSize="12" Height="35" Width="120" Margin="3" Background="Black" DockPanel.Dock="Left" Command="{Binding LoadImageCommand}"/>
+            </DockPanel>
+
+            <WindowsFormsHost Grid.Row="1"
+                          x:Name="formsHost"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          UseLayoutRounding="True">
+                <cognex:CogDisplay x:Name="CogDisplay1"
+                           Dock="Fill" />
+            </WindowsFormsHost>
+        </Grid>
+        <Separator  Grid.Column="1" Margin="5" Width="5" Background="White"/>
+        <!-- 오른쪽: 패턴 설정 -->
+        <StackPanel Grid.Column="2" Margin="5">
+            <GroupBox Header="Pattern Type" Margin="5" Padding="5" Foreground="White" Width="Auto">
+                <StackPanel>
+                    <ComboBox x:Name="PatternTypeComboBox" Margin="0,0,0,10"
+                              ItemsSource="{Binding PatternTypes}"
+                              SelectedIndex="0"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Pattern List" Margin="5" Padding="5" Foreground="White" Width="Auto"/>
+        </StackPanel>
     </Grid>
 </Page>

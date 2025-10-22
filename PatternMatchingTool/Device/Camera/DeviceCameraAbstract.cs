@@ -1,8 +1,10 @@
-﻿using System;
+﻿using MvCamCtrl.NET;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static PatternMatchingTool.Config;
 using static PatternMatchingTool.Device.Camera.DeviceCameraAbstract;
 
 namespace PatternMatchingTool.Device.Camera
@@ -11,7 +13,10 @@ namespace PatternMatchingTool.Device.Camera
     {
 
         public abstract event Action<Bitmap> OnFrameReceived;
+        public abstract event Action<Bitmap> OnProcessFrameReceived;
+
         public abstract bool OpenDevice(int nSelectedCameraIndex);
+
         public abstract void CloseDevice();
         public abstract bool StartGrab();
         public abstract void StopGrab();
@@ -19,13 +24,20 @@ namespace PatternMatchingTool.Device.Camera
         public delegate void CallBackFunctionGrab(Bitmap bmp);
 
         public abstract bool IsConnected();
-        public abstract bool SetExposureTime(double dExposureTime);
-        public abstract bool SetGain(double dGain);
-        
-        public virtual bool SetTriggerMode() { return true; }
-        public virtual bool SetFrameRate(double dFrameRate) { return true; }
+        public abstract bool SetExposureTime(float dExposureTime);
 
+        public abstract float GetExposureTime();
+        public abstract bool SetGain(float dGain);
 
+        public abstract float GetGain();
+
+        public virtual bool SetTriggerMode(bool bIsTriggerMode) { return true; }
+        public virtual bool SetFrameRate(float dFrameRate) { return true; }
+
+        public virtual float GetFrameRate() { return 0; }
+        public virtual bool Trigger() { return true; }
+
+        public virtual bool OpenDevice(CameraParameter objCameraParameter) {  return true; }
         public class ImageData : ICloneable
         {
             public bool bGrabComplete = false;

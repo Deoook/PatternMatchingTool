@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PatternMatchingTool.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,10 +20,23 @@ namespace PatternMatchingTool.View
     /// </summary>
     public partial class SettingPage : Page
     {
+        private bool IsOpened = false;
         public SettingPage()
         {
             InitializeComponent();
-            this.DataContext = new ViewModel.SettingPageVM();
+            var pDocument = Document.GetDocument;
+            this.DataContext = pDocument.SettingVM;
+            Loaded += SettingPage_Loaded;
+        }
+
+        private void SettingPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            //처음 Load 될 때만 카메라 설정 페이지로 이동
+            if (IsOpened == true)
+                return;
+
+            SettingNavigationView.Navigate(typeof(View.SettingCameraPage));
+            IsOpened = true;
         }
     }
 }

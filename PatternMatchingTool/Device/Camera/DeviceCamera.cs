@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MvCamCtrl.NET;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,12 @@ namespace PatternMatchingTool.Device.Camera
             remove { m_objCamera.OnFrameReceived -= value; }
         }
 
+        public event Action<Bitmap> OnProcessFrameReceived
+        {
+            add { m_objCamera.OnProcessFrameReceived += value; }
+            remove { m_objCamera.OnProcessFrameReceived -= value; }
+        }
+
         public DeviceCamera(DeviceCameraAbstract objCamera)
         {
             m_objCamera = objCamera;
@@ -23,6 +30,11 @@ namespace PatternMatchingTool.Device.Camera
         public bool OpenDevice(int nSelectedCameraIndex)
         {
             return m_objCamera.OpenDevice(nSelectedCameraIndex);
+        }
+
+        public bool OpenDevice(Config.CameraParameter objCameraParameter)
+        {
+            return m_objCamera.OpenDevice(objCameraParameter);
         }
 
         public void CloseDevice()
@@ -38,26 +50,49 @@ namespace PatternMatchingTool.Device.Camera
             m_objCamera.StopGrab();
         }
 
+        public bool SetTriggerMode(bool bIsTriggerMode)
+        {
+            return m_objCamera.SetTriggerMode(bIsTriggerMode);
+        }
+
         public bool IsConnected()
         {
             return m_objCamera.IsConnected();
         }
 
-        public bool SetExposureTime(double dExposureTime)
+        public bool SetExposureTime(float fExposureTime)
         {
-            return m_objCamera.SetExposureTime(dExposureTime);
+            return m_objCamera.SetExposureTime(fExposureTime);
         }
 
-        public bool SetGain(double dGain)
+        public float GetExposureTime()
         {
-            return m_objCamera.SetGain(dGain);
+            return m_objCamera.GetExposureTime();
         }
 
-        public bool SetFrameRate(double dFrameRate)
+        public bool SetGain(float fGain)
         {
-            return m_objCamera.SetFrameRate(dFrameRate);
+            return m_objCamera.SetGain(fGain);
         }
 
-        public bool SetTriggerMode() { return true; }
+        public float GetGain()
+        {
+            return m_objCamera.GetGain();
+        }
+
+        public bool SetFrameRate(float fFrameRate)
+        {
+            return m_objCamera.SetFrameRate(fFrameRate);
+        }
+
+        public float GetFrameRate()
+        {
+            return m_objCamera.GetFrameRate();
+        }
+
+        public bool Trigger()
+        {
+            return m_objCamera.Trigger();
+        }
     }
 }

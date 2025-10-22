@@ -7,21 +7,20 @@
         xmlns:local="clr-namespace:PatternMatchingTool.View"
         xmlns:view="clr-namespace:PatternMatchingTool.View"
         mc:Ignorable="d"
-        Title="SettingPage">
+        Title="SettingPage" MaxHeight="920">
     <Grid>
         <ui:NavigationView PaneDisplayMode="Top"
+                           x:Name="SettingNavigationView"
                            IsBackButtonVisible="Collapsed" 
                            IsPaneToggleVisible="False"
                            IsPaneVisible="True"
                            Width="Auto"
                            UseLayoutRounding="True"
+                           HorizontalAlignment="Stretch"
+                           VerticalAlignment="Stretch"
+                           ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                            Background="Red">
-            <ui:NavigationView.Resources>
-                <ResourceDictionary>
-                    <!--<SolidColorBrush x:Key="NavigationViewContentBackground" Color="Aqua" />
-                    <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="White" />-->
-                </ResourceDictionary>
-            </ui:NavigationView.Resources>
 
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="CAMERA" 

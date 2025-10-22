@@ -11,20 +11,21 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace PatternMatchingTool.View
 {
     /// <summary>
-    /// AutoPage.xaml에 대한 상호 작용 논리
+    /// ConfigPage.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class AutoPage : Page
+    public partial class ConfigPage : Page
     {
-        public AutoPage()
+        public ConfigPage()
         {
             InitializeComponent();
             var pDocument = Document.GetDocument;
-            this.DataContext = pDocument.AutoVM;
+            this.DataContext = pDocument.ConfigVM;
         }
     }
 }

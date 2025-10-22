@@ -1,28 +1,40 @@
-﻿using Cognex.VisionPro;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MvCamCtrl.NET;
 using PatternMatchingTool.Data;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Interop;
-using System.Windows.Media.Imaging;
+using System.Xml.Linq;
 
 namespace PatternMatchingTool.ViewModel
 {
     public partial class SettingCameraPageVM : ObservableObject
     {
+        private Config.CameraParameter m_objCameraParameter;
+
         [ObservableProperty]
         private List<string> cameraList;
 
         [ObservableProperty]
         private int selectedCameraIndex = -1;
+
+        [ObservableProperty]
+        private float exposureTime = 0;
+
+        [ObservableProperty]
+        private float gain = 0;
+
+        [ObservableProperty]
+        private float frameRate = 0;
+
+        [ObservableProperty]
+        private bool isTriggerMode = false;
+
+        [ObservableProperty]
+        private bool isCameraOpen = false;
+
+        [ObservableProperty]
+        private string cameraMode = "Continuous";
 
         //[ObservableProperty]
         //private ICogImage displayImage;
@@ -32,8 +44,9 @@ namespace PatternMatchingTool.ViewModel
 
         public SettingCameraPageVM()
         {
-               
+
         }
+
 
         [RelayCommand]
         private void SearchCamera()
@@ -42,6 +55,9 @@ namespace PatternMatchingTool.ViewModel
 
             CameraList = new List<string>();
             CameraList = pDocument.m_objProcessMain.m_objProcessCameraManager.SearchDevice();
+
+            m_objCameraParameter = new Config.CameraParameter();
+            m_objCameraParameter = pDocument.m_objConfig.GetCameraParameter();
         }
 
         [RelayCommand]
@@ -49,7 +65,16 @@ namespace PatternMatchingTool.ViewModel
         {
             var pDocument = Document.GetDocument;
 
-            pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.OpenDevice(selectedCameraIndex);
+            IsCameraOpen = pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.OpenDevice(SelectedCameraIndex);
+
+            if(false == IsCameraOpen)
+            {
+                return;
+            }
+
+            SetCameraMode(IsTriggerMode);
+            GetParameters();
+
             pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.OnFrameReceived += OnFrameReceived;
         }
 
@@ -58,6 +83,7 @@ namespace PatternMatchingTool.ViewModel
         {
             var pDocument = Document.GetDocument;
             pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.CloseDevice();
+            IsCameraOpen = false;
         }
 
         [RelayCommand]
@@ -72,6 +98,74 @@ namespace PatternMatchingTool.ViewModel
         {
             var pDocument = Document.GetDocument;
             pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.StopGrab();
+        }
+
+        [RelayCommand]
+        private void SetCameraMode(bool bMode)
+        {
+            if (true == bMode)
+            {
+                var pDocument = Document.GetDocument;
+                pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.SetTriggerMode(true);
+                CameraMode = "Trigger";
+            }
+            else
+            {
+                var pDocument = Document.GetDocument;
+                pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.SetTriggerMode(false);
+                CameraMode = "Continous";
+            }
+        }
+
+        [RelayCommand]
+        private void TriggerOnce()
+        {
+            var pDocument = Document.GetDocument;
+            pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.Trigger();
+        }
+
+        [RelayCommand]
+        private void GetParameters()
+        {
+            var pDocument = Document.GetDocument;
+            ExposureTime = pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.GetExposureTime();
+            Gain = pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.GetGain();
+            FrameRate = pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.GetFrameRate();
+        }
+
+        [RelayCommand]
+        private void SetParameters()
+        {
+            var pDocument = Document.GetDocument;
+            pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.SetExposureTime(ExposureTime);
+            pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.SetGain(Gain);
+            pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.SetFrameRate(FrameRate);
+        }
+
+        [RelayCommand]
+        private void SaveCameraParameters()
+        {
+            var pDocument = Document.GetDocument;
+            MyCamera.MV_CC_DEVICE_INFO device = (MyCamera.MV_CC_DEVICE_INFO)Marshal.PtrToStructure(pDocument.m_objProcessMain.m_objProcessCameraManager.m_stDeviceList.pDeviceInfo[SelectedCameraIndex], typeof(MyCamera.MV_CC_DEVICE_INFO));
+
+
+            // CameraIP, SerialNumber 추출 (GigE 카메라)
+            if (MyCamera.MV_GIGE_DEVICE == device.nTLayerType)
+            {
+                MyCamera.MV_GIGE_DEVICE_INFO gigeInfo = (MyCamera.MV_GIGE_DEVICE_INFO)MyCamera.ByteToStruct(device.SpecialInfo.stGigEInfo, typeof(MyCamera.MV_GIGE_DEVICE_INFO));
+                m_objCameraParameter.iCameraIP = (int)gigeInfo.nCurrentIp;
+                m_objCameraParameter.strCameraSerialNumber = gigeInfo.chSerialNumber;
+            }
+
+            m_objCameraParameter.fExposureTime = ExposureTime;
+            m_objCameraParameter.fGain = Gain;
+            m_objCameraParameter.fFrameRate = FrameRate;
+
+            pDocument.m_objConfig.SaveCameraParameter(m_objCameraParameter);
+        }
+        partial void OnIsTriggerModeChanged(bool value)
+        {
+            SetCameraMode(value);
         }
 
         private void OnFrameReceived(Bitmap bmp)
@@ -97,34 +191,6 @@ namespace PatternMatchingTool.ViewModel
             //    bmp.Dispose();
             //}
             //=============================================================================
-
         }
-
-
-        private BitmapSource ConvertToBitmapSource(Bitmap bitmap)
-        {
-            var hBitmap = bitmap.GetHbitmap();
-                bitmap.Dispose();
-            try
-            {
-                return Imaging.CreateBitmapSourceFromHBitmap(
-                    hBitmap,
-                    IntPtr.Zero,
-                    Int32Rect.Empty,
-                    BitmapSizeOptions.FromEmptyOptions());
-
-            }
-            finally
-            {
-                Gdi32.DeleteObject(hBitmap);
-            }
-        }
-    }
-
-    public static class Gdi32
-    {
-        [DllImport("gdi32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool DeleteObject(IntPtr hObject);
     }
 }

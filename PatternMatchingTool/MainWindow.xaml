@@ -3,39 +3,88 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:PatternMatchingTool"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:view="clr-namespace:PatternMatchingTool.View"
         mc:Ignorable="d"
-        Title="MainWindow" Height="780" Width="1350" Background="Black">
+        Title="MainWindow" Height="850" Width="1200" Background="Black" 
+        WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True" WindowStartupLocation="CenterScreen">
     <Grid>
-        <ui:NavigationView PaneDisplayMode="LeftFluent"
-                           IsBackButtonVisible="Collapsed" 
-                           IsPaneToggleVisible="False"
-                           IsPaneVisible="True"
-                           Width="Auto"
-                           UseLayoutRounding="True"
-                           Background="Red">
-            <ui:NavigationView.Resources>
-                <ResourceDictionary>
-                    <!--<SolidColorBrush x:Key="NavigationViewContentBackground" Color="Aqua" />
-                    <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="White" />-->
-                </ResourceDictionary>
-            </ui:NavigationView.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0" Background="Black" LastChildFill="False">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseLeftButtonDown">
+                    <i:InvokeCommandAction Command="{Binding DragMoveCommand}"
+                                   CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
 
-            <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Auto" 
-                                       Icon="Auto" 
-                                       Tag="AutoPage" 
-                                       Cursor="Hand" 
-                                       NavigationCacheMode="Enabled"
-                                       TargetPageType="{x:Type view:AutoPage}"/>
-                <ui:NavigationViewItem Content="Setting" 
-                                       Icon="Settings" 
-                                       Tag="SettingsPage" 
-                                       NavigationCacheMode="Enabled"
-                                       TargetPageType="{x:Type view:SettingPage}"/>
-            </ui:NavigationView.MenuItems>
-        </ui:NavigationView>
+            <Button Content="X" Width="30" Height="20" Margin="2" Background="Red" Foreground="White"
+            FontWeight="Bold" DockPanel.Dock="Right"
+            Command="{Binding ExitProgramCommand}"/>
+        </DockPanel>
+
+        <DockPanel LastChildFill="False" Grid.Row="1">
+            <!-- 회사 로고 넣기 -->
+            <TextBlock Text="Pattern Matching Tool" 
+                           FontSize="24" 
+                           FontWeight="Bold" 
+                           Foreground="White" 
+                           Margin="10"
+                           DockPanel.Dock="Left"/>
+            <TextBlock Text="v1.0.0" 
+                           FontSize="16" 
+                           FontWeight="SemiBold" 
+                           Foreground="White" 
+                           Margin="10"
+                           DockPanel.Dock="Left"/>
+            <TextBlock Text="{Binding Time}" 
+                            FontSize="24"
+                            FontWeight="SemiBold" 
+                            Foreground="White" 
+                            Margin="10"
+                            DockPanel.Dock="Right"/>
+        </DockPanel>
+        <DockPanel Grid.Row="2">
+            <ui:NavigationView 
+            Grid.Row="2"
+            x:Name="MainNavigationView"
+            PaneDisplayMode="LeftFluent"
+            IsBackButtonVisible="Collapsed" 
+            IsPaneToggleVisible="False"
+            IsPaneVisible="True"
+            ScrollViewer.VerticalScrollBarVisibility="Disabled"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            UseLayoutRounding="True" Margin="0,1,0,0">
+
+                <ui:NavigationView.MenuItems>
+                    <ui:NavigationViewItem Content="Auto" 
+            Icon="Auto" 
+            Tag="AutoPage" 
+            Cursor="Hand" 
+            NavigationCacheMode="Enabled"
+            TargetPageType="{x:Type view:AutoPage}"
+                   />
+                    <ui:NavigationViewItem Content="Setting" 
+            Icon="Settings" 
+            Tag="SettingsPage" 
+            NavigationCacheMode="Enabled"
+            TargetPageType="{x:Type view:SettingPage}"/>
+                    <ui:NavigationViewItem Content="Config" 
+            Icon="Settings" 
+            Tag="SettingsPage" 
+            NavigationCacheMode="Enabled"
+            TargetPageType="{x:Type view:ConfigPage}"/>
+                </ui:NavigationView.MenuItems>
+                <ui:NavigationView.FooterMenuItems>
+                    <ui:NavigationViewItem Content="About"/>
+                </ui:NavigationView.FooterMenuItems>
+            </ui:NavigationView>
+        </DockPanel>
     </Grid>
 </Window>

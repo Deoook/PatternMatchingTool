@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MvCamCtrl.NET;
+using PatternMatchingTool.Data;
 using PatternMatchingTool.Device.Camera;
 using System;
 using System.Collections.Generic;
@@ -22,10 +23,17 @@ namespace PatternMatchingTool.Process
 
         public bool Initialize()
         {
+            var pDocument = Document.GetDocument;
             bool bReturn = false;
             do
             {
                 m_objCamera = new DeviceCamera(new DeviceCameraHikvision() as DeviceCameraAbstract);
+
+                //연결된 카메라 List 찾기
+                SearchDevice();
+
+                // 시작할 때 카메라 열어두기
+                m_objCamera.OpenDevice(pDocument.m_objConfig.GetCameraParameter());
 
                 bReturn = true;
             } while (false);
@@ -33,7 +41,10 @@ namespace PatternMatchingTool.Process
             return bReturn;
         }
 
-
+        public void Deinitialize()
+        {
+            m_objCamera.CloseDevice();
+        }
         public List<string> SearchDevice()
         {
             int nRet = MyCamera.MV_CC_EnumDevices_NET(MyCamera.MV_GIGE_DEVICE, ref m_stDeviceList);
@@ -72,6 +83,16 @@ namespace PatternMatchingTool.Process
             }
 
             return deviceList;
+        }
+
+        public void Start()
+        {
+
+        }
+
+        public void Stop()
+        {
+
         }
     }
 }
