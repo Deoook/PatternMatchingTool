@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PatternMatchingTool.Communication
+namespace PatternMatchingTool.Device.Communication
 {
     public class DeviceCommunicationTCPServer : DeviceCommunicationAbstract
     {

@@ -29,5 +29,11 @@ namespace PatternMatchingTool.View
             this.DataContext = pDocument.SettingPatternVM;
         }
 
+        private void Page_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var pDocument = Document.GetDocument;
+            pDocument.SettingPatternVM.IsPatternRectClick = false;
+        }
+
     }
 }

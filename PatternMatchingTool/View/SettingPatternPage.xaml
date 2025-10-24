@@ -7,62 +7,169 @@
         xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
         xmlns:cognex="clr-namespace:Cognex.VisionPro.Display;assembly=Cognex.VisionPro.Display.Controls"
         xmlns:converters="clr-namespace:PatternMatchingTool.Converter"
-        xmlns:local="clr-namespace:PatternMatchingTool.View"
+        xmlns:local="clr-namespace:PatternMatchingTool.Behavior"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" x:Class="PatternMatchingTool.View.SettingPatternPage"
         mc:Ignorable="d"
-        Title="SettingPatternPage" >
+        Title="SettingPatternPage" MouseLeftButtonDown="Page_MouseLeftButtonDown" >
 
-    <Page.Resources>
-        <converters:BitmapSourceConverter x:Key="BitmapSourceConvert" />
-        <converters:BoolToBrushConverter x:Key="BoolToBrushConvert" />
+     <Page.Resources>
+     <converters:BitmapSourceConverter x:Key="BitmapSourceConvert" />
+     <converters:BoolToBrushConverter x:Key="BoolToBrushConvert" />
+     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConvert"/>
     </Page.Resources>
-    
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
+ 
+ <Grid>
+     <Grid.ColumnDefinitions>
+         <ColumnDefinition Width="*"/>
+         <ColumnDefinition Width="350"/>
+     </Grid.ColumnDefinitions>
 
-        <!-- 왼쪽: 버튼 + CogDisplay -->
-        <Grid Grid.Column="0" Margin="5">
-            <Grid.RowDefinitions>
-                <!-- 버튼 -->
-                <RowDefinition Height="Auto"/>
-                <!-- CogDisplay -->
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+     <!-- 왼쪽: 버튼 + CogDisplay -->
+     <Grid Grid.Column="0" Margin="5">
+         <Grid.RowDefinitions>
+             <!-- 버튼 -->
+             <RowDefinition Height="Auto"/>
+             <!-- CogDisplay -->
+             <RowDefinition Height="Auto"/>
+         </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" Margin="3">
-                <Button Content="Grab Image" TextBlock.FontSize="12" Height="35" Width="120" Margin="3" Background="Black" DockPanel.Dock="Left" />
-                <Button Content="Grab Camera" TextBlock.FontSize="12" Height="35" Width="120" Margin="3" Background="Black" DockPanel.Dock="Left"/>
-                <Button Content="Load Image" TextBlock.FontSize="12" Height="35" Width="120" Margin="3" Background="Black" DockPanel.Dock="Left" Command="{Binding LoadImageCommand}"/>
-            </DockPanel>
+         <DockPanel Grid.Row="0" Margin="3" LastChildFill="False">
+             <Button Content="Grab Image" TextBlock.FontSize="12" Height="35" Width="120" Margin="3" Background="Black" DockPanel.Dock="Left" Command="{Binding GrabImageCommand}" />
+             <Button Content="Grab Camera" TextBlock.FontSize="12" Height="35" Width="120" Margin="3" Background="Black" DockPanel.Dock="Left" Command="{Binding GrabCameraCommand}"/>
+             <Button Content="Load Image" TextBlock.FontSize="12" Height="35" Width="120" Margin="3" Background="Black" DockPanel.Dock="Left" Command="{Binding LoadImageCommand}"/>
+             <Button Content="Test Run" TextBlock.FontSize="12" Height="35" Width="120" Margin="3" Background="Black" DockPanel.Dock="Right" Command="{Binding CutCommand}"/>
+         </DockPanel>
 
-            <Viewbox Grid.Column="0"
-                 Grid.Row="0"
-                     Stretch="Uniform"
-                     ClipToBounds="True"
-                     MinWidth="618"
-                     MinHeight="500" Grid.RowSpan="2">
-                <Image Name="CameraImage"
-                     MaxHeight="500"
-                     Stretch="Uniform"
-                     Source="{Binding DisplayBitmap, Converter={StaticResource BitmapSourceConvert}}"/>
-            </Viewbox>
-            
+            <Border Background="Black" Grid.Row="1">
+                <Viewbox Grid.Row="1"
+         Stretch="Uniform"
+         ClipToBounds="True"
+         Grid.RowSpan="2"
+         Height="650">
+                    <Grid>
+                        <Image Name="CameraImage"
+                    Stretch="Uniform"
+                    Height="650"
+                    Source="{Binding DisplayBitmap, Converter={StaticResource BitmapSourceConvert}}"/>
+                        <!-- 결과 Rect -->
+                        <Canvas IsHitTestVisible="False">
+                            <Rectangle Stroke="Red" StrokeThickness="5"
+                    Width="{Binding ResultRect.Width}"
+                    Height="{Binding ResultRect.Height}"
+                    Canvas.Left="{Binding ResultRect.X}"
+                    Canvas.Top="{Binding ResultRect.Y}"/>
+                        </Canvas>
+                        <!-- 패턴 Rect -->
+                        <Canvas IsHitTestVisible="True">
+                            <Rectangle x:Name="PatternRect" Stroke="Green" StrokeThickness="2"
+                        Width="{Binding PatternRect.Width}"
+                        Height="{Binding PatternRect.Height}"
+                        Canvas.Left="{Binding PatternRect.X}"
+                        Canvas.Top="{Binding PatternRect.Y}"
+                        Fill="Transparent">
+                                <i:Interaction.Behaviors>
+                                    <local:RectBehavior />
+                                </i:Interaction.Behaviors>
+                            </Rectangle>
+                            <!-- 크기 조절 원 -->
+                            <Ellipse x:Name="TopLeft"
+             Width="7" Height="7"
+             Fill="Green" Stroke="Green" StrokeThickness="2"
+             Visibility="{Binding IsPatternRectClick, Converter={StaticResource BoolToVisibilityConverter}}"
+             Canvas.Left="{Binding PatternRectLeftTopX}"
+             Canvas.Top="{Binding PatternRectLeftTopY}"
+             Cursor="SizeNWSE">
+                                <i:Interaction.Behaviors>
+                                    <local:ResizeCircleBehavior />
+                                </i:Interaction.Behaviors>
+                            </Ellipse>
+
+                            <Ellipse x:Name="TopRight"
+             Width="7" Height="7"
+             Fill="Green" Stroke="Green" StrokeThickness="2"
+             Visibility="{Binding IsPatternRectClick, Converter={StaticResource BoolToVisibilityConverter}}"
+             Canvas.Left="{Binding PatternRectRightTopX}"
+             Canvas.Top="{Binding PatternRectRightTopY}"
+             Cursor="SizeNESW">
+                                <i:Interaction.Behaviors>
+                                    <local:ResizeCircleBehavior />
+                                </i:Interaction.Behaviors>
+                            </Ellipse>
+
+                            <Ellipse x:Name="BottomLeft"
+             Width="7" Height="7"
+             Fill="Green" Stroke="Green" StrokeThickness="2"
+             Visibility="{Binding IsPatternRectClick, Converter={StaticResource BoolToVisibilityConverter}}"
+             Canvas.Left="{Binding PatternRectLeftBottomX}"
+             Canvas.Top="{Binding PatternRectLeftBottomY}"
+             Cursor="SizeNESW">
+                                <i:Interaction.Behaviors>
+                                    <local:ResizeCircleBehavior />
+                                </i:Interaction.Behaviors>
+                            </Ellipse>
+
+                            <Ellipse x:Name="BottomRight"
+             Width="7" Height="7"
+             Fill="Green" Stroke="Green" StrokeThickness="2"
+             Visibility="{Binding IsPatternRectClick, Converter={StaticResource BoolToVisibilityConverter}}"
+             Canvas.Left="{Binding PatternRectRightBottomX}"
+             Canvas.Top="{Binding PatternRectRightBottomY}"
+             Cursor="SizeNWSE">
+                                <i:Interaction.Behaviors>
+                                    <local:ResizeCircleBehavior />
+                                </i:Interaction.Behaviors>
+                            </Ellipse>
+                        </Canvas>
+                    </Grid>
+                </Viewbox>
+            </Border>
         </Grid>
-        <Separator  Grid.Column="1" Margin="5" Width="5" Background="White"/>
-        <!-- 오른쪽: 패턴 설정 -->
-        <StackPanel Grid.Column="2" Margin="5">
-            <GroupBox Header="Pattern Type" Margin="5" Padding="5" Foreground="White" Width="Auto">
-                <StackPanel>
-                    <ComboBox x:Name="PatternTypeComboBox" Margin="0,0,0,10"
-                              ItemsSource="{Binding PatternTypes}"
-                              SelectedIndex="0"/>
-                </StackPanel>
-            </GroupBox>
-            <GroupBox Header="Pattern List" Margin="5" Padding="5" Foreground="White" Width="Auto"/>
-        </StackPanel>
-    </Grid>
+     <!-- 오른쪽: 패턴 설정 -->
+     <StackPanel Grid.Column="1" Margin="5" Width="300">
+         <DockPanel Margin="10, 5, 10, 5" LastChildFill="False">
+                <GroupBox Margin="5" Header="Pattern" Foreground="White">
+                    <Border Background="Black">
+                        <Viewbox Width="200" Height="200">
+                            <Image Name="PatternImage" Stretch="Uniform" Height="200"
+                        Source="{Binding PatternBitmap, Converter={StaticResource BitmapSourceConvert}}"/>
+                    </Viewbox>
+                    </Border>
+                </GroupBox>
+            </DockPanel>
+            <DockPanel Margin="10, 0, 10, 10" LastChildFill="False">
+                <GroupBox Margin="5" Header="PATTERN LIST" Foreground="White" Width="215">
+                    <DataGrid Background="White" Height="150"/>
+                </GroupBox>
+            </DockPanel>
+            <DockPanel Margin="10, 0, 10, 0" LastChildFill="False">
+                <Button Margin="5, 0, 5, 0" Width="215" Height="30" Content="TRAIN"/>
+            </DockPanel>
+            <DockPanel Margin="10, 5, 10, 5" LastChildFill="False">
+                <GroupBox Margin="5" Header="Threshold" Foreground="White">
+                    <TextBox Width="90" />
+                </GroupBox>
+                <GroupBox Margin="5" Header="Angle" Foreground="White">
+                    <TextBox Width="90" />
+                </GroupBox>
+            </DockPanel>
+         <DockPanel Margin="10, 3, 10, 10" LastChildFill="False">
+                <GroupBox Margin="5, 0, 5, 0" Header="Result" Foreground="White" Width="215">
+                    <StackPanel>
+                        <DockPanel>
+                            <TextBlock Text="SCORE :" Margin="5"/>
+                            <TextBlock/>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="ANGLE :" Margin="5"/>
+                            <TextBlock/>
+                        </DockPanel>
+                    </StackPanel>
+                </GroupBox>
+         </DockPanel>
+         <DockPanel Margin="10" LastChildFill="False">
+                <Button Margin="5, 0, 5, 0" Content="SAVE" Width="215" Height="30" Command="{Binding SaveIDParametersCommand}" />
+         </DockPanel>
+     </StackPanel>
+ </Grid>
 </Page>

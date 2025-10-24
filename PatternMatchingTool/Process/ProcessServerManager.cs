@@ -1,10 +1,5 @@
-﻿using PatternMatchingTool.Communication;
-using PatternMatchingTool.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PatternMatchingTool.Data;
+using PatternMatchingTool.Device.Communication;
 
 namespace PatternMatchingTool.Process
 {
@@ -37,22 +32,29 @@ namespace PatternMatchingTool.Process
         private void DataReceived(object? sender, string e)
         {
             var pDocument = Document.GetDocument;
-            //수신 데이터 처리
-            Console.WriteLine($"Data Received: {e}");
 
-            if (e == "1")
+            do
             {
-                //그냥 찍기만
-                pDocument.SetTrigger(Define.Trigger.TRIGGER_ON);
-            }
-            else if (e == "2") 
-            {
-                pDocument.SetTrigger(Define.Trigger.TRIGGER_ID);
-            }
-            else if(e == "3")
-            {
-                pDocument.SetTrigger(Define.Trigger.TRIGGER_PATTERN_MATCHING);
-            }
+                Console.WriteLine($"Data Received: {e}");
+
+                // 현재 검사 준비 완료 아니면 Break.
+                if (Define.RunMode.RUN_MODE_RUNNING != pDocument.GetRunMode())
+                    break;
+
+                if (e == "1")
+                {
+                    //그냥 찍기만
+                    pDocument.SetTrigger(Define.Trigger.TRIGGER_ON);
+                }
+                else if (e == "2")
+                {
+                    pDocument.SetTrigger(Define.Trigger.TRIGGER_ID);
+                }
+                else if (e == "3")
+                {
+                    pDocument.SetTrigger(Define.Trigger.TRIGGER_PATTERN_MATCHING);
+                }
+            } while (false);
         }
 
         private void Connect()

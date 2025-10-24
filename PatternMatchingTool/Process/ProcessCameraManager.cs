@@ -103,7 +103,11 @@ namespace PatternMatchingTool.Process
 
                 // 카메라 열고
                 if (false == m_objCamera.OpenDevice(pDocument.m_objConfig.GetCameraParameter()))
+                {
+                    // 카메라 여는거 실패했으면..?
+                    pDocument.AutoVM.IsCameraConnected = false;
                     break;
+                }
 
                 // 카메라 설정 넣어주고
                 m_objCamera.SetExposureTime(pDocument.m_objConfig.GetCameraParameter().fExposureTime);
@@ -119,6 +123,7 @@ namespace PatternMatchingTool.Process
 
                 m_bisStart = true;
                 bReturn = true;
+                pDocument.AutoVM.IsCameraConnected = true;
             } while (false);
 
             return bReturn;

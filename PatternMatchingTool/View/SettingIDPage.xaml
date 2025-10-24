@@ -41,10 +41,12 @@
             <Viewbox Grid.Row="1"
             Stretch="Uniform"
             ClipToBounds="True"
-            Grid.RowSpan="2">
+            Grid.RowSpan="2"
+                     Height="650">
                 <Grid>
                     <Image Name="CameraImage"
                Stretch="Uniform"
+               Height="600"
                Source="{Binding DisplayBitmap, Converter={StaticResource BitmapSourceConvert}}"/>
                     <Canvas IsHitTestVisible="False">
                         <Rectangle Stroke="Red" StrokeThickness="5"

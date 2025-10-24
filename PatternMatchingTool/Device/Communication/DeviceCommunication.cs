@@ -1,4 +1,4 @@
-﻿namespace PatternMatchingTool.Communication
+﻿namespace PatternMatchingTool.Device.Communication
 {
     public class DeviceCommunication
     {

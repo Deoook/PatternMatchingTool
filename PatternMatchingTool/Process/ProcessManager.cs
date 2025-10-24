@@ -23,13 +23,32 @@ namespace PatternMatchingTool.Process
 
                 // 타이머 설정
                 m_objProcessTimer = new System.Windows.Forms.Timer();
-                m_objProcessTimer.Interval = 100;
+                m_objProcessTimer.Interval = 50;
                 m_objProcessTimer.Tick += timer_Elapsed;
                 m_objProcessTimer.Start();
 
                 bReturn = true;
             } while (false);
             return bReturn;
+        }
+
+        public void Deinitialize()
+        {
+            var pDocument = Document.GetDocument;
+            // 카메라 콜백 해제
+            pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.OnProcessFrameReceived -= OnProcessFrameReceived;
+
+            // 정지상태 아니면 정지상태로 만들어서 카메라 해제
+            if(Define.RunMode.RUN_MODE_STOP != pDocument.GetRunMode())
+            {
+                pDocument.SetRunMode(Define.RunMode.RUN_MODE_STOP);
+            }
+
+            // 해제하는 동안 기다렸다가
+            Thread.Sleep(200);
+
+            // Timer 해제
+            m_objProcessTimer?.Dispose();
         }
 
         // 타이머 말고 Thread로 구현?
@@ -40,23 +59,16 @@ namespace PatternMatchingTool.Process
             // RUN_MODE_IDLE 일 경우 검사 준비 시작
             if (Define.RunMode.RUN_MODE_IDLE == pDocument.GetRunMode())
                 pDocument.m_objProcessMain.m_objProcessCameraManager.Start();
-            // RUN_MODE_READY이고 TRIGGER가 켜졌으면 검사 시작
-            else if (Define.RunMode.RUN_MODE_READY == pDocument.GetRunMode() && Define.Trigger.TRIGGER_OFF != pDocument.GetTrigger())
+            // TRIGGER가 켜졌으면 검사 시작
+            else if (Define.Trigger.TRIGGER_OFF != pDocument.GetTrigger())
                 DoProcess();
-            // RUN_MODE가 STOP이면 해제, Trigger OFF 처리
+            // RUN_MODE가 STOP이면 해제
             else if (Define.RunMode.RUN_MODE_STOP == pDocument.GetRunMode())
             {
                 pDocument.m_objProcessMain.m_objProcessCameraManager.Stop();
-                pDocument.SetTrigger(Define.Trigger.TRIGGER_OFF);
             }
         }
 
-        public void Deinitialize()
-        {
-            var pDocument = Document.GetDocument;
-            // 카메라 콜백 해제
-            pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.OnProcessFrameReceived -= OnProcessFrameReceived;
-        }
 
         private void DoProcess()
         {

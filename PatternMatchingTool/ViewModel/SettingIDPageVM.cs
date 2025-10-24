@@ -83,8 +83,8 @@ namespace PatternMatchingTool.ViewModel
             pDocument.m_objProcessMain.m_objProcessCameraManager.Start();
             pDocument.m_objProcessMain.m_objProcessCameraManager.m_objCamera.Trigger();
 
-            // 찍는 동안 200ms Delay
-            Thread.Sleep(200);
+            // 찍는 동안 100ms Delay
+            Thread.Sleep(100);
 
             // 찍은 후 카메라 닫기
             pDocument.m_objProcessMain.m_objProcessCameraManager.Stop();
@@ -101,7 +101,7 @@ namespace PatternMatchingTool.ViewModel
         private void TestRun()
         {
             ProcessID objProcessID = new ProcessID();
-            OutputID output = objProcessID.GetID(DisplayBitmap, isTryHarder, IsTryInverted, IsTryAutoRotae);
+            OutputID output = objProcessID.GetID(DisplayBitmap, IsTryHarder, IsTryInverted, IsTryAutoRotae);
             BarcodeID = output.strBarcode;
 
             // 찾은 바코드 Rect가 있을 경우

@@ -13,7 +13,7 @@ namespace PatternMatchingTool.ViewModel
         private bool isCameraConnected = false;
 
         [ObservableProperty]
-        private bool isServerConnected = true;
+        private bool isServerConnected = false;
 
         public AutoViewVM()
         {

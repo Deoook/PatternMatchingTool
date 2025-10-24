@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PatternMatchingTool.Communication
+namespace PatternMatchingTool.Device.Communication
 {
     public abstract class DeviceCommunicationAbstract
     {

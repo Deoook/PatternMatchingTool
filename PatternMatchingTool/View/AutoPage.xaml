@@ -44,10 +44,11 @@
                     <TextBlock Text="Camera" VerticalAlignment="Center" Foreground="White"/>
                 </StackPanel>
 
+
                 <!-- Server -->
                 <StackPanel Orientation="Horizontal" Margin="20,0">
                     <Ellipse Width="20" Height="20"
-                    Fill="{Binding IsServerConnected, Converter={StaticResource BoolToBrushConvert}}"
+                    Fill="{Binding IsServerConnected, Converter={StaticResource BoolToBrushConvert},Mode=TwoWay}"
                     Stroke="Black" StrokeThickness="1" Margin="0,0,5,0"/>
                     <TextBlock Text="Server" VerticalAlignment="Center" Foreground="White"/>
                 </StackPanel>
@@ -64,7 +65,7 @@
                 <!-- Buttons -->
             </Grid.RowDefinitions>
 
-            <!-- 🔹 Result 영역 -->
+            <!-- Result 영역 -->
             <StackPanel Grid.Row="0" MinWidth="300" Margin="0,0,0,10">
                 <TextBlock Text="Result"
                    Foreground="White"
@@ -80,7 +81,7 @@
                   Height="200"/>
             </StackPanel>
 
-            <!-- 🔹 Log 영역 -->
+            <!-- Log 영역 -->
             <StackPanel Grid.Row="1" Margin="0,0,0,10">
                 <TextBlock Text="Log"
                    Foreground="White"
@@ -95,7 +96,7 @@
                  Height="200"/>
             </StackPanel>
 
-            <!-- 🔹 버튼 영역 -->
+            <!-- 버튼 영역 -->
             <Grid Grid.Row="2" Margin="5,10,5,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
